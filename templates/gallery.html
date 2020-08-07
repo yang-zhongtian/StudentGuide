@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}相册{% endblock %}
+{% block admin_options %}{% endblock %}
+{% block content %}
+<div class="container text-center">
+    <br>
+    <div class="jumbotron">
+        <h2>音乐相册</h2>
+        <h5>请选择年级进入</h5>
+        <div class="row" style="margin-bottom: 10px;">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
+                <a class="btn btn-primary v-bind" style="color: white;">直升初一</a>
+                <a class="btn btn-primary v-bind" style="color: white;">常规初一</a>
+            </div>
+            <div class="col-md-2"></div>
+        </div>
+        <div class="row" style="margin-bottom: 10px;">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
+                <a class="btn btn-primary v-bind" style="color: white;">直升初二</a>
+                <a class="btn btn-primary v-bind" style="color: white;">常规初二</a>
+            </div>
+            <div class="col-md-2"></div>
+        </div>
+        <div class="row" style="margin-bottom: 10px;">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
+                <a class="btn btn-primary v-bind" style="color: white;">初三</a>
+                <a class="btn btn-primary v-bind" style="color: white;">直升高一</a>
+            </div>
+            <div class="col-md-2"></div>
+        </div>
+        <div class="row" style="margin-bottom: 10px;">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
+                <a class="btn btn-primary v-bind" style="color: white;">高一</a>
+                <a class="btn btn-primary v-bind" style="color: white;">高二</a>
+                <a class="btn btn-primary v-bind" style="color: white;">高三</a>
+            </div>
+            <div class="col-md-2"></div>
+        </div>
+        <div class="row" style="margin-bottom: 10px;">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
+                <a class="btn btn-primary v-bind" style="color: white;">国际部高一</a>
+                <a class="btn btn-primary v-bind" style="color: white;">国际部高二</a>
+            </div>
+            <div class="col-md-2"></div>
+        </div>
+        <div class="row" style="margin-bottom: 10px;">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
+                <a class="btn btn-primary v-bind" style="color: white;">国际部高三</a>
+            </div>
+            <div class="col-md-2"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block script %}
+<script>
+    $(function () {
+        var config = {
+            "直升初一": "",
+            "常规初一": "",
+            "直升初二": "",
+            "常规初二": "",
+            "初三": "",
+            "直升高一": "",
+            "高一": "",
+            "高二": "",
+            "高三": "",
+            "国际部高一": "",
+            "国际部高二": "",
+            "国际部高三": ""
+        }
+        var loadData = function () {
+            $(".v-bind").each(function () {
+                var url = config[$(this).text()];
+                if (url == "") url = 'javascript: swal("错误","该年级数据未导入！","error")';
+                $(this).attr("href", url);
+            })
+        }
+        loadData();
+    });
+</script>
+{% endblock %}
