@@ -95,6 +95,7 @@
                                 <div class="dropdown-menu">
                                     <a id="balance-server-1" class="dropdown-item">服务器1(主力)</a>
                                     <a id="balance-server-2" class="dropdown-item">服务器2</a>
+                                    <a id="balance-server-3" class="dropdown-item">服务器3</a>
                                 </div>
                             </div>
                             &nbsp;
@@ -151,6 +152,7 @@
         var lockDown = false;
         var balanceServer = [
             "http://mc.roselle.vip:26170/",
+            "http://server3.guidelogin.hcc.io/index.php",
             "http://47.98.170.221/"
         ];
         var submitButton = $("#send-danmu-form").children("button[type='submit']");
@@ -200,8 +202,9 @@
             var callback = location.protocol + "//" + location.host + "/danmu/external_login/?param=";
             var service_name = "在线开学手册";
             var ext_url = "?service_name=" + service_name + "&callback=" + callback;
-            $("#balance-server-1").attr("href", balanceServer[0] + ext_url);
-            $("#balance-server-2").attr("href", balanceServer[1] + ext_url);
+            balanceServer.forEach((e,i) => {
+                $("#balance-server-"+(i+1)).attr("href", e + ext_url);
+            })
         };
         var enterStageMode = function (e) {
             $("#navbar-container").hide();
