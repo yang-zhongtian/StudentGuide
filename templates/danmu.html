@@ -92,11 +92,7 @@
                             <div class="dropdown">
                                 <button type="button" class="btn btn-primary dropdown-toggle"
                                     data-toggle="dropdown">登录入口</button>
-                                <div class="dropdown-menu">
-                                    <a id="balance-server-1" class="dropdown-item">服务器1(主力)</a>
-                                    <a id="balance-server-2" class="dropdown-item">服务器2</a>
-                                    <a id="balance-server-3" class="dropdown-item">服务器3</a>
-                                </div>
+                                <div class="dropdown-menu" id="balanceServerList"></div>
                             </div>
                             &nbsp;
                             <a href="/daka/" class="btn btn-secondary" style="color: white;">返回打卡页</a>
@@ -153,7 +149,9 @@
         var balanceServer = [
             "http://mc.roselle.vip:26170/",
             "http://server3.guidelogin.hcc.io/index.php",
-            "http://47.98.170.221/"
+            "http://47.98.170.221/",
+            "http://212.64.89.107/",
+            "http://katyushaa.asuscomm.com:61080/"
         ];
         var submitButton = $("#send-danmu-form").children("button[type='submit']");
         var iconTranslate = ["https://cdn.jsdelivr.net/gh/yangzhongtian001/imglib@master/boy.png", "https://cdn.jsdelivr.net/gh/yangzhongtian001/imglib@master/girl.png"];
@@ -203,7 +201,7 @@
             var service_name = "在线开学手册";
             var ext_url = "?service_name=" + service_name + "&callback=" + callback;
             balanceServer.forEach((e,i) => {
-                $("#balance-server-"+(i+1)).attr("href", e + ext_url);
+                $("#balanceServerList").append(`<a class="dropdown-item" href="${e + ext_url}">服务器${i+1}</a>`)
             })
         };
         var enterStageMode = function (e) {
