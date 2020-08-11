@@ -6,20 +6,19 @@ import re
 from Crypto.Cipher import AES
 from bson.objectid import ObjectId
 
-
 app = Flask(__name__)
 gfw = DFAFilter()
 gfw.parse("keywords")
 
-app.config["SECRET_KEY"] = '\x18\xc0\xe6\xa4V\x84G\xb9o\xb8\xbf2\xa4\xd9\xcb_\xff\xa2\xfe\xa9l\xd8\t\xc9'
+app.config[
+    "SECRET_KEY"] = '\x18\xc0\xe6\xa4V\x84G\xb9o\xb8\xbf2\xa4\xd9\xcb_\xff\xa2\xfe\xa9l\xd8\t\xc9'
 mongo = pymongo.MongoClient("mongodb://localhost:27017/")
 collection = mongo["stuguide"]["collection"]
 banned_user = mongo["stuguide"]["banuser"]
 admin_user = mongo["stuguide"]["adminuser"]
 
-test_account = {
-    "test01": "1234567890"
-}
+test_account = {"test01": "1234567890"}
+
 
 class Aes_ECB(object):
     def __init__(self, key):
@@ -38,19 +37,35 @@ class Aes_ECB(object):
         decrypted_code = decrypted_text.rstrip('\0')
         return decrypted_code
 
+
 def login_yunxiao(username, password, captchaCode='', captchaValue=''):
     reqheaders = {
         'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
         'Host': 'account.yunxiao.com',
-        'Referer': 'https://account.yunxiao.com/partner?service=http://bnds.idsp.yunxiao.com/Portal/LayoutD/CasLogin.aspx?ax=1',
-        'User-Agent': 'Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:59.0) Gecko/20100101 Firefox/59.0',
+        'Referer':
+        'https://account.yunxiao.com/partner?service=http://bnds.idsp.yunxiao.com/Portal/LayoutD/CasLogin.aspx?ax=1',
+        'User-Agent':
+        'Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:59.0) Gecko/20100101 Firefox/59.0',
         'X-Requested-With': 'XMLHttpRequest',
     }
-    dict_edit = {'status': 0, 'name': '', 'captchaCode': '', }
-    data = {'loginName': username, 'password': password, 'domain': 'bnds', 'captchaCode': captchaCode, 'captchaValue': captchaValue,
-            'rememberMe': 'false', 'service': 'http://bnds.idsp.yunxiao.com/Portal/LayoutD/CasLogin.aspx?ax'}
-    responseData = requests.post(
-        "https://account.yunxiao.com/", data=data, headers=reqheaders).json()
+    dict_edit = {
+        'status': 0,
+        'name': '',
+        'captchaCode': '',
+    }
+    data = {
+        'loginName': username,
+        'password': password,
+        'domain': 'bnds',
+        'captchaCode': captchaCode,
+        'captchaValue': captchaValue,
+        'rememberMe': 'false',
+        'service':
+        'http://bnds.idsp.yunxiao.com/Portal/LayoutD/CasLogin.aspx?ax'
+    }
+    responseData = requests.post("https://account.yunxiao.com/",
+                                 data=data,
+                                 headers=reqheaders).json()
     if 'errCode' in responseData.keys():
         dict_edit['status'] = responseData['errCode']
         dict_edit['name'] = responseData['errMsg']
@@ -59,56 +74,78 @@ def login_yunxiao(username, password, captchaCode='', captchaValue=''):
             dict_edit['captchaCode'] = responseData['captchaCode']
     return dict_edit
 
+
 def login_required(func):
-    def inner(*args,**kwargs):
+    def inner(*args, **kwargs):
         if not session.get("loggedin", False):
             return redirect(url_for("layout_danmu"))
-        return func(*args,**kwargs)
+        return func(*args, **kwargs)
+
     return inner
 
+
 def admin_required(func):
-    def inner(*args,**kwargs):
+    def inner(*args, **kwargs):
         if not session.get("admin_loggedin", False):
             return redirect(url_for("layout_danmu"))
-        return func(*args,**kwargs)
+        return func(*args, **kwargs)
+
     return inner
+
 
 @app.route("/", endpoint="layout_homeredirect")
 def layout_homeredirect():
     return redirect(url_for("layout_daka"))
 
+
 @app.route("/daka/", endpoint="layout_daka")
 def layout_daka():
     return render_template("daka.html")
+
 
 @app.route("/gallery/", endpoint="layout_gallery")
 def layout_gallery():
     return render_template("gallery.html")
 
+
 @app.route("/about/", endpoint="layout_about")
 def layout_about():
     return render_template("about.html")
+
 
 @app.route("/tos/", endpoint="layout_tos")
 def layout_tos():
     return render_template("tos.html")
 
+
 @app.route("/danmu/", endpoint="layout_danmu")
 def layout_danmu():
     if session.get("loggedin", False) == True:
         if session.get("admin_loggedin", False) == False:
-            return render_template("danmu.html", loggedin="true", hide_admin="display:none;")
+            return render_template("danmu.html",
+                                   loggedin="true",
+                                   hide_admin="display:none;")
         else:
-            return render_template("danmu.html", loggedin="true", hide_admin="")
-    return render_template("danmu.html", loggedin="false", hide_admin="display:none;")
+            return render_template("danmu.html",
+                                   loggedin="true",
+                                   hide_admin="")
+    return render_template("danmu.html",
+                           loggedin="false",
+                           hide_admin="display:none;")
+
 
 @app.route("/danmu/get/", endpoint="get_danmu")
 @login_required
 def get_danmu():
-    f = collection.find({}, {"_id": 0, "text": 1, "icon": 1, "color": 1}).sort(
-        [("_id", -1)]).limit(50)
+    f = collection.find({}, {
+        "_id": 0,
+        "text": 1,
+        "icon": 1,
+        "color": 1
+    }).sort([("_id", -1)]).limit(50)
     result = [x for x in f]
     return jsonify(result)
+
 
 @app.route("/danmu/send/", methods=["POST"], endpoint="send_danmu")
 @login_required
@@ -124,8 +161,12 @@ def send_danmu():
         if 0 < len(txt) < 40 and icon in [0, 1]:
             filtered, result = gfw.filter(txt)
             if result == False:
-                collection.insert_one(
-                    {"text": txt, "icon": icon, "color": color, "studentid": studentid})
+                collection.insert_one({
+                    "text": txt,
+                    "icon": icon,
+                    "color": color,
+                    "studentid": studentid
+                })
                 return jsonify({"status": 1, "text": txt, "filter": False})
             else:
                 return jsonify({"status": 1, "text": filtered, "filter": True})
@@ -143,12 +184,15 @@ def login_danmu():
             if test_account.get(username, "") == password:
                 result = {"status": 0}
         else:
-            result = login_yunxiao(
-                username, password, captchacode, captchavalue)
+            result = login_yunxiao(username, password, captchacode,
+                                   captchavalue)
         if result["status"] == 0:
             session["loggedin"] = True
             session["studentid"] = username
-            adm = admin_user.find_one({"username": username}, {"_id": 0, "name": 1})
+            adm = admin_user.find_one({"username": username}, {
+                "_id": 0,
+                "name": 1
+            })
             if adm != None:
                 session["admin_loggedin"] = True
                 session["admin_name"] = adm.get("name", "")
@@ -159,7 +203,10 @@ def login_danmu():
         elif result["status"] == -1:
             return jsonify({"status": -1})
         elif result["status"] == -2:
-            return jsonify({"status": -2, "captchacode": result.get("captchaCode", "")})
+            return jsonify({
+                "status": -2,
+                "captchacode": result.get("captchaCode", "")
+            })
         elif result["status"] == -3:
             return jsonify({"status": -3})
         elif result["status"] == 3:
@@ -181,7 +228,10 @@ def external_login_danmu():
         studentid = Aes_ECB(splitted[0]).AES_decrypt(splitted[1])
         session["loggedin"] = True
         session["studentid"] = studentid
-        adm = admin_user.find_one({"username": studentid}, {"_id": 0, "name": 1})
+        adm = admin_user.find_one({"username": studentid}, {
+            "_id": 0,
+            "name": 1
+        })
         if adm != None:
             session["admin_loggedin"] = True
             session["admin_name"] = adm.get("name", "")
@@ -201,25 +251,36 @@ def logout_danmu():
 @app.route("/danmu/super-admin/", endpoint="layout_manage")
 @admin_required
 def layout_manage():
-    return render_template("manage.html", admin_name=session.get("admin_name", "NULL"))
+    return render_template("manage.html",
+                           admin_name=session.get("admin_name", "NULL"))
 
 
 @app.route("/danmu/super-admin/get/", endpoint="get_manage")
 @admin_required
 def get_manage():
-    f = collection.find({}, {"_id": 1, "text": 1, "studentid": 1}).sort(
-        [("_id", -1)]).limit(50)
+    f = collection.find({}, {
+        "_id": 1,
+        "text": 1,
+        "studentid": 1
+    }).sort([("_id", -1)]).limit(50)
     result = []
     for x in f:
-        result.append({"_id": str(x["_id"]), "text": x.get(
-            "text", ""), "studentid":  x.get("studentid", "")})
+        result.append({
+            "_id": str(x["_id"]),
+            "text": x.get("text", ""),
+            "studentid": x.get("studentid", "")
+        })
     return jsonify(result)
 
 
-@app.route("/danmu/super-admin/delete/", methods=["POST"], endpoint="delete_manage")
+@app.route("/danmu/super-admin/delete/",
+           methods=["POST"],
+           endpoint="delete_manage")
 @admin_required
 def delete_manage():
-    if banned_user.find({"studentid": session.get("studentid","")}).count() > 0:
+    if banned_user.find({
+            "studentid": session.get("studentid", "")
+    }).count() > 0:
         return jsonify({"status": 0})
     node_id = request.form.get("id", "")
     if node_id == "":
@@ -231,28 +292,38 @@ def delete_manage():
         return jsonify({"status": 0})
 
 
-@app.route("/danmu/super-admin/banuser/", methods=["POST"], endpoint="banuser_manage")
+@app.route("/danmu/super-admin/banuser/",
+           methods=["POST"],
+           endpoint="banuser_manage")
 @admin_required
 def banuser_manage():
-    if banned_user.find({"studentid": session.get("studentid","")}).count() > 0:
+    if banned_user.find({
+            "studentid": session.get("studentid", "")
+    }).count() > 0:
         return jsonify({"status": 0})
     node_id = request.form.get("studentid", "")
     if node_id == "":
         return jsonify({"status": 0})
     result = banned_user.update(
         {"studentid": node_id},
-        {"$setOnInsert": {"operator": session.get("admin_name", "")}},
-        upsert=True
-    )
+        {"$setOnInsert": {
+            "operator": session.get("admin_name", "")
+        }},
+        upsert=True)
     if result["n"] == 1:
         return jsonify({"status": 1})
     else:
         return jsonify({"status": 0})
 
-@app.route("/danmu/super-admin/recoveruser/", methods=["POST"], endpoint="recoveruser_manage")
+
+@app.route("/danmu/super-admin/recoveruser/",
+           methods=["POST"],
+           endpoint="recoveruser_manage")
 @admin_required
 def recoveruser_manage():
-    if banned_user.find({"studentid": session.get("studentid","")}).count() > 0:
+    if banned_user.find({
+            "studentid": session.get("studentid", "")
+    }).count() > 0:
         return jsonify({"status": 0})
     node_id = request.form.get("studentid", "")
     if node_id == "":
@@ -263,13 +334,19 @@ def recoveruser_manage():
     else:
         return jsonify({"status": 0})
 
-@app.route("/danmu/super-admin/getbanneduser/", endpoint="getbanneduser_manage")
+
+@app.route("/danmu/super-admin/getbanneduser/",
+           endpoint="getbanneduser_manage")
 @admin_required
 def getbanneduser_manage():
-    result = banned_user.find({}, {"_id": 0, "studentid": 1, "operator": 1}).sort(
-        [("_id", -1)]).limit(50)
+    result = banned_user.find({}, {
+        "_id": 0,
+        "studentid": 1,
+        "operator": 1
+    }).sort([("_id", -1)]).limit(50)
     pres = [x for x in result]
     return jsonify(pres)
+
 
 if __name__ == "__main__":
     # 请务必使用gunicorn+gevent启动，此处为debug
