@@ -1,6 +1,7 @@
 from flask import Flask, render_template, jsonify, request, session, redirect, url_for
 from filter import DFAFilter
 import pymongo
+from flask_wtf import CSRFProtect
 import requests
 import re
 from Crypto.Cipher import AES
@@ -10,8 +11,8 @@ app = Flask(__name__)
 gfw = DFAFilter()
 gfw.parse("keywords")
 
-app.config[
-    "SECRET_KEY"] = '\x18\xc0\xe6\xa4V\x84G\xb9o\xb8\xbf2\xa4\xd9\xcb_\xff\xa2\xfe\xa9l\xd8\t\xc9'
+app.secret_key = "\x18\xc0\xe6\xa4V\x84G\xb9o\xb8\xbf2\xa4\xd9\xcb_\xff\xa2\xfe\xa9l\xd8\t\xc9"
+CSRFProtect(app)
 mongo = pymongo.MongoClient("mongodb://localhost:27017/")
 collection = mongo["stuguide"]["collection"]
 banned_user = mongo["stuguide"]["banuser"]
@@ -159,6 +160,7 @@ def send_danmu():
     if txt != "" and icon != "" and color != "" and icon.isdigit():
         icon = int(icon)
         if 0 < len(txt) < 40 and icon in [0, 1]:
+            txt = re.sub(r"<[^>]+>", "", txt, flags=re.S)
             filtered, result = gfw.filter(txt)
             if result == False:
                 collection.insert_one({
