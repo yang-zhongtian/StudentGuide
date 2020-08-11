@@ -157,10 +157,10 @@ def send_danmu():
     studentid = session.get("studentid", "")
     if banned_user.find_one({"studentid": studentid}) != None:
         return jsonify({"status": -2})
+    txt = re.sub(r"<[^>]+>", "", txt, flags=re.S)
     if txt != "" and icon != "" and color != "" and icon.isdigit():
         icon = int(icon)
         if 0 < len(txt) < 40 and icon in [0, 1]:
-            txt = re.sub(r"<[^>]+>", "", txt, flags=re.S)
             filtered, result = gfw.filter(txt)
             if result == False:
                 collection.insert_one({
