@@ -38,7 +38,6 @@ class Aes_ECB(object):
         decrypted_code = decrypted_text.rstrip('\0')
         return decrypted_code
 
-
 def login_yunxiao(username, password, captchaCode='', captchaValue=''):
     reqheaders = {
         'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
@@ -60,29 +59,41 @@ def login_yunxiao(username, password, captchaCode='', captchaValue=''):
             dict_edit['captchaCode'] = responseData['captchaCode']
     return dict_edit
 
-@app.route("/")
+def login_required(func):
+    def inner(*args,**kwargs):
+        if not session.get("loggedin", False):
+            return redirect(url_for("layout_danmu"))
+        return func(*args,**kwargs)
+    return inner
+
+def admin_required(func):
+    def inner(*args,**kwargs):
+        if not session.get("admin_loggedin", False):
+            return redirect(url_for("layout_danmu"))
+        return func(*args,**kwargs)
+    return inner
+
+@app.route("/", endpoint="layout_homeredirect")
 def layout_homeredirect():
     return redirect(url_for("layout_daka"))
 
-
-@app.route("/daka/")
+@app.route("/daka/", endpoint="layout_daka")
 def layout_daka():
     return render_template("daka.html")
 
-@app.route("/gallery/")
+@app.route("/gallery/", endpoint="layout_gallery")
 def layout_gallery():
     return render_template("gallery.html")
 
-@app.route("/about/")
+@app.route("/about/", endpoint="layout_about")
 def layout_about():
     return render_template("about.html")
 
-@app.route("/tos/")
+@app.route("/tos/", endpoint="layout_tos")
 def layout_tos():
     return render_template("tos.html")
 
-
-@app.route("/danmu/")
+@app.route("/danmu/", endpoint="layout_danmu")
 def layout_danmu():
     if session.get("loggedin", False) == True:
         if session.get("admin_loggedin", False) == False:
@@ -91,26 +102,22 @@ def layout_danmu():
             return render_template("danmu.html", loggedin="true", hide_admin="")
     return render_template("danmu.html", loggedin="false", hide_admin="display:none;")
 
-
-@app.route("/danmu/get/")
+@app.route("/danmu/get/", endpoint="get_danmu")
+@login_required
 def get_danmu():
-    if session.get("loggedin", False) == False:
-        return jsonify({})
     f = collection.find({}, {"_id": 0, "text": 1, "icon": 1, "color": 1}).sort(
         [("_id", -1)]).limit(50)
     result = [x for x in f]
     return jsonify(result)
 
-
-@app.route("/danmu/send/", methods=["POST"])
+@app.route("/danmu/send/", methods=["POST"], endpoint="send_danmu")
+@login_required
 def send_danmu():
-    if session.get("loggedin", False) == False:
-        return jsonify({"status": 0})
     txt = str(request.form.get("text", ""))
     icon = str(request.form.get("icon", ""))
     color = str(request.form.get("color", ""))
     studentid = session.get("studentid", "")
-    if banned_user.find({"studentid": studentid}).count() > 0:
+    if banned_user.find_one({"studentid": studentid}) != None:
         return jsonify({"status": -2})
     if txt != "" and icon != "" and color != "" and icon.isdigit():
         icon = int(icon)
@@ -125,7 +132,7 @@ def send_danmu():
     return jsonify({"status": 0})
 
 
-@app.route("/danmu/login/", methods=["POST"])
+@app.route("/danmu/login/", methods=["POST"], endpoint="login_danmu")
 def login_danmu():
     username = request.form.get("username", "")
     password = request.form.get("password", "")
@@ -162,7 +169,7 @@ def login_danmu():
     return jsonify({"status": -4})
 
 
-@app.route("/danmu/external_login/")
+@app.route("/danmu/external_login/", endpoint="external_login_danmu")
 def external_login_danmu():
     param = request.args.get("param", "")
     if param == "":
@@ -185,23 +192,21 @@ def external_login_danmu():
         return jsonify({"status": 0, "msg": "param error"})
 
 
-@app.route("/danmu/logout/")
+@app.route("/danmu/logout/", endpoint="logout_danmu")
 def logout_danmu():
     session.clear()
     return redirect(url_for("layout_danmu"))
 
 
-@app.route("/danmu/super-admin/")
+@app.route("/danmu/super-admin/", endpoint="layout_manage")
+@admin_required
 def layout_manage():
-    if session.get("admin_loggedin", False) == False:
-        return redirect(url_for("layout_danmu"))
     return render_template("manage.html", admin_name=session.get("admin_name", "NULL"))
 
 
-@app.route("/danmu/super-admin/get/")
+@app.route("/danmu/super-admin/get/", endpoint="get_manage")
+@admin_required
 def get_manage():
-    if session.get("admin_loggedin", False) == False:
-        return redirect(url_for("layout_danmu"))
     f = collection.find({}, {"_id": 1, "text": 1, "studentid": 1}).sort(
         [("_id", -1)]).limit(50)
     result = []
@@ -211,10 +216,9 @@ def get_manage():
     return jsonify(result)
 
 
-@app.route("/danmu/super-admin/delete/", methods=["POST"])
+@app.route("/danmu/super-admin/delete/", methods=["POST"], endpoint="delete_manage")
+@admin_required
 def delete_manage():
-    if session.get("admin_loggedin", False) == False:
-        return redirect(url_for("layout_danmu"))
     if banned_user.find({"studentid": session.get("studentid","")}).count() > 0:
         return jsonify({"status": 0})
     node_id = request.form.get("id", "")
@@ -227,10 +231,9 @@ def delete_manage():
         return jsonify({"status": 0})
 
 
-@app.route("/danmu/super-admin/banuser/", methods=["POST"])
+@app.route("/danmu/super-admin/banuser/", methods=["POST"], endpoint="banuser_manage")
+@admin_required
 def banuser_manage():
-    if session.get("admin_loggedin", False) == False:
-        return redirect(url_for("layout_danmu"))
     if banned_user.find({"studentid": session.get("studentid","")}).count() > 0:
         return jsonify({"status": 0})
     node_id = request.form.get("studentid", "")
@@ -246,10 +249,9 @@ def banuser_manage():
     else:
         return jsonify({"status": 0})
 
-@app.route("/danmu/super-admin/recoveruser/", methods=["POST"])
+@app.route("/danmu/super-admin/recoveruser/", methods=["POST"], endpoint="recoveruser_manage")
+@admin_required
 def recoveruser_manage():
-    if session.get("admin_loggedin", False) == False:
-        return redirect(url_for("layout_danmu"))
     if banned_user.find({"studentid": session.get("studentid","")}).count() > 0:
         return jsonify({"status": 0})
     node_id = request.form.get("studentid", "")
@@ -261,15 +263,14 @@ def recoveruser_manage():
     else:
         return jsonify({"status": 0})
 
-@app.route("/danmu/super-admin/getbanneduser/")
+@app.route("/danmu/super-admin/getbanneduser/", endpoint="getbanneduser_manage")
+@admin_required
 def getbanneduser_manage():
-    if session.get("admin_loggedin", False) == False:
-        return redirect(url_for("layout_danmu"))
     result = banned_user.find({}, {"_id": 0, "studentid": 1, "operator": 1}).sort(
         [("_id", -1)]).limit(50)
     pres = [x for x in result]
     return jsonify(pres)
 
 if __name__ == "__main__":
-    # 请务必使用tornado启动，此处为debug
+    # 请务必使用gunicorn+gevent启动，此处为debug
     app.run(host="0.0.0.0", port=80, debug=True)
