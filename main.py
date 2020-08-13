@@ -1,6 +1,6 @@
 from flask import Flask, render_template, jsonify, request, session, redirect, url_for
 from filter import DFAFilter
-import pymongo
+from flask_pymongo import PyMongo
 from flask_wtf import CSRFProtect
 import requests
 import re
@@ -13,10 +13,7 @@ gfw.parse("keywords")
 
 app.secret_key = "\x18\xc0\xe6\xa4V\x84G\xb9o\xb8\xbf2\xa4\xd9\xcb_\xff\xa2\xfe\xa9l\xd8\t\xc9"
 CSRFProtect(app)
-mongo = pymongo.MongoClient("mongodb://localhost:27017/")
-collection = mongo["stuguide"]["collection"]
-banned_user = mongo["stuguide"]["banuser"]
-admin_user = mongo["stuguide"]["adminuser"]
+mongo = PyMongo(app, uri="mongodb://localhost:27017/stuguide")
 
 test_account = {"test01": "1234567890"}
 
@@ -138,7 +135,7 @@ def layout_danmu():
 @app.route("/danmu/get/", endpoint="get_danmu")
 @login_required
 def get_danmu():
-    f = collection.find({}, {
+    f = mongo.db.collection.find({}, {
         "_id": 0,
         "text": 1,
         "icon": 1,
@@ -155,7 +152,7 @@ def send_danmu():
     icon = str(request.form.get("icon", ""))
     color = str(request.form.get("color", ""))
     studentid = session.get("studentid", "")
-    if banned_user.find_one({"studentid": studentid}) != None:
+    if mongo.db.banuser.find_one({"studentid": studentid}) != None:
         return jsonify({"status": -2})
     txt = re.sub(r"<[^>]+>", "", txt, flags=re.S)
     if txt != "" and icon != "" and color != "" and icon.isdigit():
@@ -163,7 +160,7 @@ def send_danmu():
         if 0 < len(txt) < 40 and icon in [0, 1]:
             filtered, result = gfw.filter(txt)
             if result == False:
-                collection.insert_one({
+                mongo.db.collection.insert_one({
                     "text": txt,
                     "icon": icon,
                     "color": color,
@@ -191,7 +188,7 @@ def login_danmu():
         if result["status"] == 0:
             session["loggedin"] = True
             session["studentid"] = username
-            adm = admin_user.find_one({"username": username}, {
+            adm = mongo.db.adminuser.find_one({"username": username}, {
                 "_id": 0,
                 "name": 1
             })
@@ -230,7 +227,7 @@ def external_login_danmu():
         studentid = Aes_ECB(splitted[0]).AES_decrypt(splitted[1])
         session["loggedin"] = True
         session["studentid"] = studentid
-        adm = admin_user.find_one({"username": studentid}, {
+        adm = mongo.db.adminuser.find_one({"username": studentid}, {
             "_id": 0,
             "name": 1
         })
@@ -260,7 +257,7 @@ def layout_manage():
 @app.route("/danmu/super-admin/get/", endpoint="get_manage")
 @admin_required
 def get_manage():
-    f = collection.find({}, {
+    f = mongo.db.collection.find({}, {
         "_id": 1,
         "text": 1,
         "studentid": 1
@@ -280,14 +277,14 @@ def get_manage():
            endpoint="delete_manage")
 @admin_required
 def delete_manage():
-    if banned_user.find({
+    if mongo.db.banuser.find({
             "studentid": session.get("studentid", "")
     }).count() > 0:
         return jsonify({"status": 0})
     node_id = request.form.get("id", "")
     if node_id == "":
         return jsonify({"status": 0})
-    result = collection.remove({"_id": ObjectId(node_id)})
+    result = mongo.db.collection.remove({"_id": ObjectId(node_id)})
     if result["n"] == 1:
         return jsonify({"status": 1})
     else:
@@ -299,14 +296,14 @@ def delete_manage():
            endpoint="banuser_manage")
 @admin_required
 def banuser_manage():
-    if banned_user.find({
+    if mongo.db.banuser.find({
             "studentid": session.get("studentid", "")
     }).count() > 0:
         return jsonify({"status": 0})
     node_id = request.form.get("studentid", "")
     if node_id == "":
         return jsonify({"status": 0})
-    result = banned_user.update(
+    result = mongo.db.banuser.update(
         {"studentid": node_id},
         {"$setOnInsert": {
             "operator": session.get("admin_name", "")
@@ -323,14 +320,14 @@ def banuser_manage():
            endpoint="recoveruser_manage")
 @admin_required
 def recoveruser_manage():
-    if banned_user.find({
+    if mongo.db.banuser.find({
             "studentid": session.get("studentid", "")
     }).count() > 0:
         return jsonify({"status": 0})
     node_id = request.form.get("studentid", "")
     if node_id == "":
         return jsonify({"status": 0})
-    result = banned_user.remove({"studentid": node_id})
+    result = mongo.db.banuser.remove({"studentid": node_id})
     if result["n"] == 1:
         return jsonify({"status": 1})
     else:
@@ -341,7 +338,7 @@ def recoveruser_manage():
            endpoint="getbanneduser_manage")
 @admin_required
 def getbanneduser_manage():
-    result = banned_user.find({}, {
+    result = mongo.db.banuser.find({}, {
         "_id": 0,
         "studentid": 1,
         "operator": 1
