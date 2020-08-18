@@ -11,45 +11,61 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet"
         href="https://cdn.jsdelivr.net/gh/yangzhongtian001/jquery.barrager.js@master/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/5.14.0/css/all.min.css">
+    <style>
+        .navbar-nav {
+            flex-direction: row;
+        }
+
+        .nav-link {
+            padding-right: .5rem !important;
+            padding-left: .5rem !important;
+        }
+
+        .ml-auto .dropdown-menu {
+            left: auto !important;
+            right: 0px;
+        }
+    </style>
     {% block style %}{% endblock %}
 </head>
 
 <body>
     <div id="navbar-container">
         <nav class="navbar navbar-expand-md {% block navbar_style %}bg-primary{% endblock %} navbar-dark">
-            <a class="navbar-brand">{% block brand %}在线开学手册{% endblock %}</a>
+            <a class="navbar-brand">{% block brand %}<i class="fas fa-passport"></i>&nbsp;在线开学手册{% endblock %}</a>
             <span class="navbar-text ml-auto d-sm-block d-md-none">戳此开始→</span>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="collapsibleNavbar">
-                <ul class="navbar-nav">
+                <ul class="navbar-nav mr-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="/daka/">打卡地图</a>
+                        <a class="nav-link" href="/daka/"><i class="fas fa-map-marked-alt"></i>&nbsp;打卡地图</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/gallery/">相册</a>
+                        <a class="nav-link" href="/gallery/"><i class="fas fa-images"></i>&nbsp;相册</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/danmu/">弹幕墙</a>
+                        <a class="nav-link" href="/danmu/"><i class="fas fa-comments"></i>&nbsp;弹幕墙</a>
                     </li>
                     {% block admin_options %}
                     <li id="danmu-admin" class="nav-item" style="{{ hide_admin }}">
-                        <a class="nav-link" href="/danmu/super-admin/">管理员入口</a>
+                        <a class="nav-link" href="/danmu/super-admin/"><i class="fas fa-tools"></i>&nbsp;管理员入口</a>
                     </li>
                     <li id="danmu-stagemode" class="nav-item" style="{{ hide_admin }}">
-                        <a id="enter-stagemode" class="nav-link" href="javascript: void(0)">进入舞台模式</a>
+                        <a id="enter-stagemode" class="nav-link" href="javascript: void(0)"><i
+                                class="fas fa-expand-arrows-alt"></i>&nbsp;进入舞台模式</a>
                     </li>
                     {% endblock %}
                     <li id="danmu-logout" class="nav-item" style="display: none;">
-                        <a class="nav-link" href="/danmu/logout/">切换账号</a>
+                        <a class="nav-link" href="/danmu/logout/"><i class="fas fa-sign-out-alt"></i>&nbsp;切换账号</a>
                     </li>
-                    {% block nav_append %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="/about/">关于</a>
+                    <li class="nav-item" id="nav-about">
+                        <a class="nav-link" href="/about/"><i class="fas fa-info-circle"></i>&nbsp;关于</a>
                     </li>
-                    {% endblock %}
                 </ul>
+                {% block nav_append %}{% endblock %}
             </div>
         </nav>
     </div>
