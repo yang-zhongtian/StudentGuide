@@ -2,6 +2,7 @@
 {% block title %}弹幕管理{% endblock %}
 {% block admin_options %}{% endblock %}
 {% block style %}
+<link href="https://cdn.staticfile.org/toastr.js/2.1.4/toastr.min.css" rel="stylesheet" />
 <style>
     html,
     body {
@@ -21,20 +22,30 @@
         white-space: nowrap;
         text-overflow: ellipsis;
     }
+
+    #nav-about {
+        display: none;
+    }
 </style>
 {% endblock %}
-{% block brand %}弹幕风险监控平台{% endblock %}
+{% block brand %}<i class="fas fa-user-check"></i>&nbsp;弹幕风险监控平台{% endblock %}
 {% block navbar_style %}bg-info{% endblock %}
 {% block nav_append %}
-<li id="danmu-ban" class="nav-item">
-    <a class="nav-link" href="javascript: loadBan()">账号封禁</a>
-</li>
-<li class="nav-item">
-    <a class="nav-link text-white">当前在线管理员：{{ admin_name }}</a>
-</li>
-<li class="nav-item">
-    <a class="nav-link text-white">服务器连接状态：<span id="status-monitor" class="text-warning">连接中</span></a>
-</li>
+<ul class="navbar-nav ml-auto">
+    <li id="danmu-ban" class="nav-item">
+        <a class="nav-link" href="javascript: loadBan()">账号封禁</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link text-white">管理员：{{ admin_name }}</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link text-white">服务器：<span id="status-monitor" class="text-warning">连接中</span></a>
+    </li>
+    <li class="navbar-form">
+        <select class="form-control" id="verifier-select" count="{{ verifier_count }}">
+        </select>
+    </li>
+</ul>
 {% endblock %}
 {% block content %}
 <br>
@@ -45,35 +56,30 @@
             <strong>提示</strong> 强烈建议于PC端使用此页面
         </div>
     </div>
-    <div class="row">
-        <div class="col-md-3">
-            <table class="table table-hover">
-                <tbody id="result-container-1">
+    <div class="row mx-auto">
+        <div class="alert alert-info alert-dismissible text-center" style="width: 100%;">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <strong>操作提示</strong>&nbsp;&nbsp;键盘 <span class="badge badge-info">S</span>下一条&nbsp;&nbsp;<span class="badge badge-info">W</span>上一条&nbsp;&nbsp;<span class="badge badge-info">A</span>标记为删除或取消标记&nbsp;&nbsp;<span class="badge badge-info">双击D</span>提交当前页审核数据&nbsp;&nbsp;&nbsp;&nbsp;鼠标 <span class="badge badge-info">点击一行</span>选中数据&nbsp;&nbsp;<span class="badge badge-info">点击已选中行数据</span>切换该数据是否删除&nbsp;&nbsp;<a href="javascript:void(0)" onclick="javascript:manualSubmit()" class="badge badge-danger text-white">点此</a>提交数据
+        </div>
+    </div>
+    <div class="row mx-auto">
+        <div class="col-md-1"></div>
+        <div class="col-md-10">
+            <table class="table table-hover table-bordered row mx-auto w-100">
+                <thead class="w-100">
+                    <tr class="row mx-0">
+                        <th class="col-1">*</th>
+                        <th class="col-5">内容</th>
+                        <th class="col-4">用户</th>
+                        <th class="col-2">删除</th>
+                    </tr>
+                </thead>
+                <tbody id="result-container" class="w-100">
 
                 </tbody>
             </table>
         </div>
-        <div class="col-md-3">
-            <table class="table table-hover">
-                <tbody id="result-container-2">
-
-                </tbody>
-            </table>
-        </div>
-        <div class="col-md-3">
-            <table class="table table-hover">
-                <tbody id="result-container-3">
-
-                </tbody>
-            </table>
-        </div>
-        <div class="col-md-3">
-            <table class="table table-hover">
-                <tbody id="result-container-4">
-
-                </tbody>
-            </table>
-        </div>
+        <div class="col-md-1"></div>
     </div>
 </div>
 <div class="modal fade" id="banModal">
@@ -81,7 +87,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title">用户封禁</h4>
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <button type="button" class="close" data-dismiss="modal" onclick="javascript:dismissBanDialog()">&times;</button>
             </div>
             <div class="modal-body">
                 <table class="table table-hover">
@@ -99,7 +105,7 @@
             <div class="modal-footer">
                 <button id="banuser-ban-btn" type="button" class="btn btn-danger">封禁用户</button>
                 <button id="banuser-rec-btn" type="button" class="btn btn-warning">解封用户</button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="javascript:dismissBanDialog()">关闭</button>
             </div>
         </div>
     </div>
@@ -107,5 +113,6 @@
 {% endblock %}
 
 {% block script %}
+<script type="text/javascript" src="https://cdn.staticfile.org/toastr.js/2.1.4/toastr.min.js"></script>
 <script type="text/javascript" src="/static/js/manage.min.js"></script>
 {% endblock %}

@@ -1,20 +1,20 @@
 from flask import Flask, render_template, jsonify, request, session, redirect, url_for
-from filter import DFAFilter
 from flask_pymongo import PyMongo
 from flask_wtf import CSRFProtect
 import requests
 import re
 from Crypto.Cipher import AES
 from bson.objectid import ObjectId
+import random
 
 app = Flask(__name__)
-gfw = DFAFilter()
-gfw.parse("keywords")
 
 app.secret_key = "\x18\xc0\xe6\xa4V\x84G\xb9o\xb8\xbf2\xa4\xd9\xcb_\xff\xa2\xfe\xa9l\xd8\t\xc9"
+# app.config["SERVER_NAME"] = "guide.hcc.io" # 注意生产服务器开启
 CSRFProtect(app)
 mongo = PyMongo(app, uri="mongodb://localhost:27017/stuguide")
 
+verifier_count = 10
 test_account = {"test01": "1234567890"}
 
 
@@ -87,7 +87,14 @@ def admin_required(func):
         if not session.get("admin_loggedin", False):
             return redirect(url_for("layout_danmu"))
         return func(*args, **kwargs)
+    return inner
 
+
+def banned_checked(func):
+    def inner(*args, **kwargs):
+        if mongo.db.banuser.find_one({"username": session.get("username", "")}) != None:
+            return jsonify({"status": 0})
+        return func(*args, **kwargs)
     return inner
 
 
@@ -135,7 +142,9 @@ def layout_danmu():
 @app.route("/danmu/get/", endpoint="get_danmu")
 @login_required
 def get_danmu():
-    f = mongo.db.collection.find({}, {
+    f = mongo.db.collection.find({
+        "verified": 1
+    }, {
         "_id": 0,
         "text": 1,
         "icon": 1,
@@ -151,24 +160,22 @@ def send_danmu():
     txt = str(request.form.get("text", ""))
     icon = str(request.form.get("icon", ""))
     color = str(request.form.get("color", ""))
-    studentid = session.get("studentid", "")
-    if mongo.db.banuser.find_one({"studentid": studentid}) != None:
+    username = session.get("username", "")
+    if mongo.db.banuser.find_one({"username": username}) != None:
         return jsonify({"status": -2})
     txt = re.sub(r"<[^>]+>", "", txt, flags=re.S)
     if txt != "" and icon != "" and color != "" and icon.isdigit():
         icon = int(icon)
         if 0 < len(txt) < 40 and icon in [0, 1]:
-            filtered, result = gfw.filter(txt)
-            if result == False:
-                mongo.db.collection.insert_one({
-                    "text": txt,
-                    "icon": icon,
-                    "color": color,
-                    "studentid": studentid
-                })
-                return jsonify({"status": 1, "text": txt, "filter": False})
-            else:
-                return jsonify({"status": 1, "text": filtered, "filter": True})
+            mongo.db.collection.insert_one({
+                "text": txt,
+                "icon": icon,
+                "color": color,
+                "username": username,
+                "verified": 0,
+                "verifier": random.randint(1, verifier_count)
+            })
+            return jsonify({"status": 1, "text": txt})
     return jsonify({"status": 0})
 
 
@@ -187,7 +194,7 @@ def login_danmu():
                                    captchavalue)
         if result["status"] == 0:
             session["loggedin"] = True
-            session["studentid"] = username
+            session["username"] = username
             adm = mongo.db.adminuser.find_one({"username": username}, {
                 "_id": 0,
                 "name": 1
@@ -224,10 +231,10 @@ def external_login_danmu():
     if len(splitted) != 2:
         return jsonify({"status": 0, "msg": "param error"})
     try:
-        studentid = Aes_ECB(splitted[0]).AES_decrypt(splitted[1])
+        username = Aes_ECB(splitted[0]).AES_decrypt(splitted[1])
         session["loggedin"] = True
-        session["studentid"] = studentid
-        adm = mongo.db.adminuser.find_one({"username": studentid}, {
+        session["username"] = username
+        adm = mongo.db.adminuser.find_one({"username": username}, {
             "_id": 0,
             "name": 1
         })
@@ -250,61 +257,50 @@ def logout_danmu():
 @app.route("/danmu/super-admin/", endpoint="layout_manage")
 @admin_required
 def layout_manage():
-    return render_template("manage.html",
-                           admin_name=session.get("admin_name", "NULL"))
+    return render_template("manage.html", admin_name=session.get("admin_name", "NULL"), verifier_count=verifier_count)
 
 
 @app.route("/danmu/super-admin/get/", endpoint="get_manage")
 @admin_required
 def get_manage():
-    f = mongo.db.collection.find({}, {
+    f = mongo.db.collection.find({"verified": 0, "verifier": int(request.args.get("verifier", 1))}, {
         "_id": 1,
         "text": 1,
-        "studentid": 1
-    }).sort([("_id", -1)]).limit(50)
+        "username": 1
+    }).sort([("_id", -1)]).limit(8)
     result = []
     for x in f:
         result.append({
             "_id": str(x["_id"]),
             "text": x.get("text", ""),
-            "studentid": x.get("studentid", "")
+            "username": x.get("username", "")
         })
     return jsonify(result)
 
 
-@app.route("/danmu/super-admin/delete/",
-           methods=["POST"],
-           endpoint="delete_manage")
+@app.route("/danmu/super-admin/operation/", methods=["POST"], endpoint="operation_manage")
 @admin_required
-def delete_manage():
-    if mongo.db.banuser.find({
-            "studentid": session.get("studentid", "")
-    }).count() > 0:
-        return jsonify({"status": 0})
-    node_id = request.form.get("id", "")
-    if node_id == "":
-        return jsonify({"status": 0})
-    result = mongo.db.collection.remove({"_id": ObjectId(node_id)})
-    if result["n"] == 1:
-        return jsonify({"status": 1})
-    else:
-        return jsonify({"status": 0})
+@banned_checked
+def operation_manage():
+    accept_id = request.form.getlist("accept_id[]")
+    delete_id = request.form.getlist("delete_id[]")
+    accept_list = [ObjectId(x) for x in accept_id]
+    delete_list = [ObjectId(x) for x in delete_id]
+    mongo.db.collection.update_many({"_id": {"$in": accept_list}}, {
+                               "$set": {"verified": 1}})
+    mongo.db.collection.remove({"_id": {"$in": delete_list}})
+    return jsonify({"status": 1})
 
 
-@app.route("/danmu/super-admin/banuser/",
-           methods=["POST"],
-           endpoint="banuser_manage")
+@app.route("/danmu/super-admin/banuser/", methods=["POST"], endpoint="banuser_manage")
 @admin_required
+@banned_checked
 def banuser_manage():
-    if mongo.db.banuser.find({
-            "studentid": session.get("studentid", "")
-    }).count() > 0:
-        return jsonify({"status": 0})
-    node_id = request.form.get("studentid", "")
+    node_id = request.form.get("username", "")
     if node_id == "":
         return jsonify({"status": 0})
     result = mongo.db.banuser.update(
-        {"studentid": node_id},
+        {"username": node_id},
         {"$setOnInsert": {
             "operator": session.get("admin_name", "")
         }},
@@ -315,32 +311,30 @@ def banuser_manage():
         return jsonify({"status": 0})
 
 
-@app.route("/danmu/super-admin/recoveruser/",
-           methods=["POST"],
-           endpoint="recoveruser_manage")
+@app.route("/danmu/super-admin/recoveruser/", methods=["POST"], endpoint="recoveruser_manage")
 @admin_required
+@banned_checked
 def recoveruser_manage():
     if mongo.db.banuser.find({
-            "studentid": session.get("studentid", "")
+            "username": session.get("username", "")
     }).count() > 0:
         return jsonify({"status": 0})
-    node_id = request.form.get("studentid", "")
+    node_id = request.form.get("username", "")
     if node_id == "":
         return jsonify({"status": 0})
-    result = mongo.db.banuser.remove({"studentid": node_id})
+    result = mongo.db.banuser.remove({"username": node_id})
     if result["n"] == 1:
         return jsonify({"status": 1})
     else:
         return jsonify({"status": 0})
 
 
-@app.route("/danmu/super-admin/getbanneduser/",
-           endpoint="getbanneduser_manage")
+@app.route("/danmu/super-admin/getbanneduser/", endpoint="getbanneduser_manage")
 @admin_required
 def getbanneduser_manage():
     result = mongo.db.banuser.find({}, {
         "_id": 0,
-        "studentid": 1,
+        "username": 1,
         "operator": 1
     }).sort([("_id", -1)]).limit(50)
     pres = [x for x in result]

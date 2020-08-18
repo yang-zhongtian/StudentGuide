@@ -88,10 +88,7 @@ $(function () {
                 $("body").barrager(danmu_config);
                 lockDown = true;
                 submitButton.attr("disabled", true);
-                var locktime = 0//3000;
-                if (r.filter) {
-                    locktime = 10000;
-                }
+                var locktime = 3000;
                 setTimeout(function () {
                     lockDown = false;
                     submitButton.attr("disabled", false);
