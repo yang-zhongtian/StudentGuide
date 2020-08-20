@@ -78,7 +78,6 @@ def login_required(func):
         if not session.get("loggedin", False):
             return redirect(url_for("layout_danmu"))
         return func(*args, **kwargs)
-
     return inner
 
 
@@ -137,7 +136,6 @@ def layout_danmu():
     return render_template("danmu.html",
                            loggedin="false",
                            hide_admin="display:none;")
-
 
 @app.route("/danmu/get/", endpoint="get_danmu")
 @login_required
