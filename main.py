@@ -3,20 +3,26 @@ from flask_pymongo import PyMongo
 from flask_wtf import CSRFProtect
 import requests
 import re
+import socket
 from Crypto.Cipher import AES
 from bson.objectid import ObjectId
 import random
 
 app = Flask(__name__)
 
-app.secret_key = "\x18\xc0\xe6\xa4V\x84G\xb9o\xb8\xbf2\xa4\xd9\xcb_\xff\xa2\xfe\xa9l\xd8\t\xc9"
-# app.config["SERVER_NAME"] = "guide.hcc.io" # 注意生产服务器开启
+app.config["SECRET_KEY"] = "\x18\xc0\xe6\xa4V\x84G\xb9o\xb8\xbf2\xa4\xd9\xcb_\xff\xa2\xfe\xa9l\xd8\t\xc9"
+
+test_account = {"test01": "1234567890"}
+DEBUG = True
+
+if socket.gethostname().find("HCC") != -1:
+    app.config["SERVER_NAME"] = "guide.hcc.io"
+    test_account = {}
+    DEBUG = False
+
 CSRFProtect(app)
 mongo = PyMongo(app, uri="mongodb://localhost:27017/stuguide")
-
-verifier_count = 10
-test_account = {"test01": "1234567890"}
-
+verifier_count = 5
 
 class Aes_ECB(object):
     def __init__(self, key):
@@ -341,4 +347,4 @@ def getbanneduser_manage():
 
 if __name__ == "__main__":
     # 请务必使用gunicorn+gevent启动，此处为debug
-    app.run(host="0.0.0.0", port=80, debug=True)
+    app.run(host="127.0.0.1", port=5500, debug=DEBUG)
