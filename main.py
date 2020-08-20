@@ -13,10 +13,14 @@ app = Flask(__name__)
 app.config["SECRET_KEY"] = "\x18\xc0\xe6\xa4V\x84G\xb9o\xb8\xbf2\xa4\xd9\xcb_\xff\xa2\xfe\xa9l\xd8\t\xc9"
 
 test_account = {"test01": "1234567890"}
+HOST = "0.0.0.0"
+PORT = 80
 DEBUG = True
 
 if socket.gethostname().find("HCC") != -1:
     app.config["SERVER_NAME"] = "guide.hcc.io"
+    HOST = "127.0.0.1"
+    PORT = 5500
     test_account = {}
     DEBUG = False
 
@@ -347,4 +351,4 @@ def getbanneduser_manage():
 
 if __name__ == "__main__":
     # 请务必使用gunicorn+gevent启动，此处为debug
-    app.run(host="127.0.0.1", port=5500, debug=DEBUG)
+    app.run(host=HOST, port=PORT, debug=DEBUG)
