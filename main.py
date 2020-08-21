@@ -189,8 +189,8 @@ def send_danmu():
 
 @app.route("/danmu/login/", methods=["POST"], endpoint="login_danmu")
 def login_danmu():
-    username = request.form.get("username", "")
-    password = request.form.get("password", "")
+    username = str(request.form.get("username", ""))
+    password = str(request.form.get("password", ""))
     captchacode = request.form.get("captchacode", "")
     captchavalue = request.form.get("captchavalue", "")
     if username != "" and password != "":
