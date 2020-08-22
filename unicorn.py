@@ -6,8 +6,8 @@ import multiprocessing
 bind = "unix:/var/run/studentguide.sock"
 workers = multiprocessing.cpu_count() * 2 +1
 max_requests = 10000
+worker_connections = 10000
 keepalive = 5
-# daemon = True #服务器部署正常后开启
 worker_class = "gunicorn.workers.ggevent.GeventWorker"
 threads = 20
 loglevel = "info"
