@@ -17,12 +17,14 @@ HOST = "0.0.0.0"
 PORT = 80
 DEBUG = True
 
+"""
 if socket.gethostname().find("HCC") != -1:
     app.config["SERVER_NAME"] = "guide.hcc.io"
     HOST = "127.0.0.1"
     PORT = 5500
     test_account = {}
     DEBUG = False
+"""
 
 CSRFProtect(app)
 mongo = PyMongo(app, uri="mongodb://localhost:27017/stuguide")
@@ -239,7 +241,7 @@ def external_login_danmu():
     if len(splitted) != 2:
         return jsonify({"status": 0, "msg": "param error"})
     try:
-        username = Aes_ECB(splitted[0]).AES_decrypt(splitted[1])
+        username = str(Aes_ECB(splitted[0]).AES_decrypt(splitted[1]))
         session["loggedin"] = True
         session["username"] = username
         adm = mongo.db.adminuser.find_one({"username": username}, {
