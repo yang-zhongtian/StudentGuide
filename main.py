@@ -17,14 +17,12 @@ HOST = "0.0.0.0"
 PORT = 80
 DEBUG = True
 
-"""
 if socket.gethostname().find("HCC") != -1:
     app.config["SERVER_NAME"] = "guide.hcc.io"
     HOST = "127.0.0.1"
     PORT = 5500
     test_account = {}
     DEBUG = False
-"""
 
 CSRFProtect(app)
 mongo = PyMongo(app, uri="mongodb://localhost:27017/stuguide")
@@ -111,7 +109,9 @@ def banned_checked(func):
 
 @app.route("/", endpoint="layout_homeredirect")
 def layout_homeredirect():
-    return redirect(url_for("layout_daka"))
+    responce = redirect(url_for("layout_daka"))
+    responce.set_cookie()
+    return 
 
 
 @app.route("/daka/", endpoint="layout_daka")
