@@ -109,9 +109,7 @@ def banned_checked(func):
 
 @app.route("/", endpoint="layout_homeredirect")
 def layout_homeredirect():
-    responce = redirect(url_for("layout_daka"))
-    responce.set_cookie()
-    return 
+    return redirect(url_for("layout_daka"))
 
 
 @app.route("/daka/", endpoint="layout_daka")
@@ -159,7 +157,7 @@ def get_danmu():
         "text": 1,
         "icon": 1,
         "color": 1
-    }).sort([("_id", -1)]).limit(50)
+    }).sort([("_id", -1)]).limit(40)
     result = [x for x in f]
     return jsonify(result)
 
@@ -199,6 +197,8 @@ def login_danmu():
         if username in test_account.keys():
             if test_account.get(username, "") == password:
                 result = {"status": 0}
+            else:
+                result = {"status": -1}
         else:
             result = login_yunxiao(username, password, captchacode,
                                    captchavalue)
