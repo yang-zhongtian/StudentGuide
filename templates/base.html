@@ -41,28 +41,28 @@
             <div class="collapse navbar-collapse" id="collapsibleNavbar">
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="/daka/"><i class="fas fa-map-marked-alt"></i>&nbsp;打卡</a>
+                        <a class="nav-link" href="/daka/"><i class="fas fa-map-marked-alt"></i>打卡</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/gallery/"><i class="fas fa-images"></i>&nbsp;相册</a>
+                        <a class="nav-link" href="/gallery/"><i class="fas fa-images"></i>相册</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/danmu/"><i class="fas fa-comments"></i>&nbsp;弹幕</a>
+                        <a class="nav-link" href="/danmu/"><i class="fas fa-comments"></i>弹幕</a>
                     </li>
                     {% block admin_options %}
                     <li id="danmu-admin" class="nav-item" style="{{ hide_admin }}">
-                        <a class="nav-link" href="/danmu/super-admin/"><i class="fas fa-tools"></i>&nbsp;管理员入口</a>
+                        <a class="nav-link" href="/danmu/super-admin/"><i class="fas fa-tools"></i>管理员入口</a>
                     </li>
                     <li id="danmu-stagemode" class="nav-item" style="{{ hide_admin }}">
                         <a id="enter-stagemode" class="nav-link" href="javascript: void(0)"><i
-                                class="fas fa-expand-arrows-alt"></i>&nbsp;进入舞台模式</a>
+                                class="fas fa-expand-arrows-alt"></i>进入舞台模式</a>
                     </li>
                     {% endblock %}
                     <li id="danmu-logout" class="nav-item" style="display: none;">
-                        <a class="nav-link" href="/danmu/logout/"><i class="fas fa-sign-out-alt"></i>&nbsp;退出</a>
+                        <a class="nav-link" href="/danmu/logout/"><i class="fas fa-sign-out-alt"></i>退出</a>
                     </li>
                     <li class="nav-item" id="nav-about">
-                        <a class="nav-link" href="/about/"><i class="fas fa-info-circle"></i>&nbsp;关于</a>
+                        <a class="nav-link" href="/about/"><i class="fas fa-info-circle"></i>关于</a>
                     </li>
                 </ul>
                 {% block nav_append %}{% endblock %}
