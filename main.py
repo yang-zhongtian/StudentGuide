@@ -4,29 +4,22 @@ from flask_wtf import CSRFProtect
 import requests
 import re
 import socket
+import config
 from Crypto.Cipher import AES
 from bson.objectid import ObjectId
 import random
 
 app = Flask(__name__)
 
-app.config["SECRET_KEY"] = "\x18\xc0\xe6\xa4V\x84G\xb9o\xb8\xbf2\xa4\xd9\xcb_\xff\xa2\xfe\xa9l\xd8\t\xc9"
-
-test_account = {"test01": "1234567890"}
-HOST = "0.0.0.0"
-PORT = 80
-DEBUG = True
-
 if socket.gethostname().find("HCC") != -1:
-    app.config["SERVER_NAME"] = "guide.hcc.io"
-    HOST = "127.0.0.1"
-    PORT = 5500
-    test_account = {}
-    DEBUG = False
+    appConfig = config.ProductionConfig
+else:
+    appConfig = config.TestConfig
+
+app.config.from_object(appConfig)
 
 CSRFProtect(app)
-mongo = PyMongo(app, uri="mongodb://localhost:27017/stuguide")
-verifier_count = 5
+mongo = PyMongo(app, uri=appConfig.MONGODB_URI)
 
 class Aes_ECB(object):
     def __init__(self, key):
@@ -181,7 +174,7 @@ def send_danmu():
                 "color": color,
                 "username": username,
                 "verified": 0,
-                "verifier": random.randint(1, verifier_count)
+                "verifier": random.randint(1, appConfig.VERIFIER_AMOUNT)
             })
             return jsonify({"status": 1, "text": txt})
     return jsonify({"status": 0})
@@ -194,8 +187,8 @@ def login_danmu():
     captchacode = request.form.get("captchacode", "")
     captchavalue = request.form.get("captchavalue", "")
     if username != "" and password != "":
-        if username in test_account.keys():
-            if test_account.get(username, "") == password:
+        if username in appConfig.TEST_ACCOUNT.keys():
+            if appConfig.TEST_ACCOUNT.get(username, "") == password:
                 result = {"status": 0}
             else:
                 result = {"status": -1}
@@ -267,7 +260,7 @@ def logout_danmu():
 @app.route("/danmu/super-admin/", endpoint="layout_manage")
 @admin_required
 def layout_manage():
-    return render_template("manage.html", admin_name=session.get("admin_name", "NULL"), verifier_count=verifier_count)
+    return render_template("manage.html", admin_name=session.get("admin_name", "NULL"), verifier_count=appConfig.VERIFIER_AMOUNT)
 
 
 @app.route("/danmu/super-admin/get/", endpoint="get_manage")
@@ -353,4 +346,4 @@ def getbanneduser_manage():
 
 if __name__ == "__main__":
     # 请务必使用gunicorn+gevent启动，此处为debug
-    app.run(host=HOST, port=PORT, debug=DEBUG)
+    app.run(host=appConfig.HOST, port=appConfig.PORT)
