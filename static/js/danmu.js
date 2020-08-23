@@ -7,15 +7,61 @@ $(function () {
         "http://212.64.89.107/",
         "http://katyushaa.asuscomm.com:61080/"
     ];
+    var backgroundImage = {
+        "large": [
+            "https://cdn.jsdelivr.net/gh/yangzhongtian001/imglib@master/large-min-new/background-large-1.jpg",
+            "https://cdn.jsdelivr.net/gh/yangzhongtian001/imglib@master/large-min-new/background-large-2.jpg",
+            "https://cdn.jsdelivr.net/gh/yangzhongtian001/imglib@master/large-min-new/background-large-3.jpg",
+            "https://cdn.jsdelivr.net/gh/yangzhongtian001/imglib@master/large-min-new/background-large-4.jpg",
+            "https://cdn.jsdelivr.net/gh/yangzhongtian001/imglib@master/large-min-new/background-large-5.jpg",
+            "https://cdn.jsdelivr.net/gh/yangzhongtian001/imglib@master/large-min-new/background-large-6.jpg"
+        ],
+        "small": [
+            "https://cdn.jsdelivr.net/gh/yangzhongtian001/imglib@master/small-min/background-small-1.jpg",
+            "https://cdn.jsdelivr.net/gh/yangzhongtian001/imglib@master/small-min/background-small-2.jpg",
+            "https://cdn.jsdelivr.net/gh/yangzhongtian001/imglib@master/small-min/background-small-3.jpg",
+            "https://cdn.jsdelivr.net/gh/yangzhongtian001/imglib@master/small-min/background-small-4.jpg",
+            "https://cdn.jsdelivr.net/gh/yangzhongtian001/imglib@master/small-min/background-small-5.jpg",
+            "https://cdn.jsdelivr.net/gh/yangzhongtian001/imglib@master/small-min/background-small-6.jpg",
+            "https://cdn.jsdelivr.net/gh/yangzhongtian001/imglib@master/small-min/background-small-7.jpg",
+            "https://cdn.jsdelivr.net/gh/yangzhongtian001/imglib@master/small-min/background-small-8.jpg"
+        ]
+    }
+    var backgroundInterval;
     var submitButton = $("#send-danmu-form").children("button[type='submit']");
     var iconTranslate = ["https://cdn.jsdelivr.net/gh/yangzhongtian001/imglib@master/boy.png", "https://cdn.jsdelivr.net/gh/yangzhongtian001/imglib@master/girl.png"];
-    var fitScreen = function (stagemode = false) {
-        if (stagemode) var send_panel_height = 0, container_height = 0;
-        else var send_panel_height = $("#send-panel").height(), container_height = $("#navbar-container").height();
+    var fitScreen = function (stagemode = 0) {
+        if (stagemode) {
+            var send_panel_height = 0;
+            var container_height = 0;
+            var offset = 0;
+        }
+        else {
+            var send_panel_height = $("#send-panel").height();
+            var container_height = $("#navbar-container").height();
+            var offset = 42;
+        }
         var panelHight = $("body").height() - container_height;
         $(".page-panel").height(panelHight);
-        $("#display-panel").height(panelHight - send_panel_height - 40);
+        $("#display-panel").height(panelHight - send_panel_height - offset);
     };
+    var isMobile = function () {
+        var userAgentInfo = navigator.userAgent;
+        var mobileAgents = ["Android", "iPhone", "SymbianOS", "Windows Phone", "iPad", "iPod"];
+        var mobile_flag = false;
+        for (var v = 0; v < mobileAgents.length; v++) {
+            if (userAgentInfo.indexOf(mobileAgents[v]) > 0) {
+                mobile_flag = true;
+                break;
+            }
+        }
+        var screen_width = window.screen.width;
+        var screen_height = window.screen.height;
+        if (screen_width < 500 && screen_height < 800) {
+            mobile_flag = true;
+        }
+        return mobile_flag;
+    }
     var fullData = [];
     var fullDatacnt = 0;
     var fullDatalayout = function () {
@@ -24,7 +70,7 @@ $(function () {
                 if (fullDatacnt >= fullData.length) {
                     clearInterval(interv);
                     fullDatacnt = 0;
-                    window.setTimeout(fullDatalayout, 1000);
+                    window.setTimeout(fullDatalayout, 2000);
                 }
                 $("body").barrager(fullData[fullDatacnt++]);
             }
@@ -47,7 +93,7 @@ $(function () {
     var triggerLoggedin = function () {
         $("#danmu-logout").show();
         loadData();
-        window.setInterval(loadData, 8000);
+        window.setInterval(loadData, 10000);
     };
     var loadBalanceServer = function () {
         var callback = location.protocol + "//" + location.host + "/danmu/external_login/?param=";
@@ -60,10 +106,26 @@ $(function () {
     var enterStageMode = function (e) {
         $("#navbar-container").hide();
         $("#send-panel").hide();
-        // TODO: 更换页面背景为舞台背景
-        fitScreen(true);
+        $("#display-panel").css("padding", "0px");
+        fitScreen(1);
+    };
+    var danmuBackgroundAutuChange = function () {
+        var full = $("#danmu-background li").size();
+        var current = 0;
+        if (full > 0) $("#danmu-background").find("li").eq(0).show();
+        backgroundInterval = window.setInterval(function () {
+            if (++current >= full) current = 0;
+            $("#danmu-background").find("li").eq(current).fadeIn(500).siblings().fadeOut(500);
+        }, 8000)
     }
-    $(window).resize(fitScreen);
+    var loadDanmuBackground = function (ismobile) {
+        var imggroup = ismobile ? backgroundImage["small"] : backgroundImage["large"];
+        var finalhtml = "";
+        imggroup.forEach(v => {
+            finalhtml += `<li style="display:none;"><img src="${v}" class="rounded"></img></li>`;
+        })
+        $("#danmu-background").html(finalhtml);
+    }
     $("#send-danmu-form").submit(function (e) {
         e.preventDefault();
         var danmu_text = $("#danmu-text").val();
@@ -115,11 +177,7 @@ $(function () {
         $.post("/danmu/login/", { username: username, password: password, captchacode: captchacode, captchavalue: captchavalue }, function (r) {
             if (r.status == 0) {
                 $("#loginModal").modal("hide");
-                if (r.is_admin == 1) {
-                    $("#danmu-admin").show();
-                    $("#danmu-stagemode").show();
-                }
-                triggerLoggedin();
+                window.location.reload();
             }
             else if (r.status == -1) {
                 swal("登录失败", "用户名或密码错误", "error");
@@ -162,12 +220,15 @@ $(function () {
     });
     $("#enter-stagemode").click(enterStageMode);
     $(document).ready(function () {
-        fitScreen();
+        fitScreen(0);
         $(".selectpicker").selectpicker({
             showIcon: true,
         });
         loadBalanceServer();
+        loadDanmuBackground(isMobile());
         fullDatalayout();
+        danmuBackgroundAutuChange();
+        $(window).resize(function () { fitScreen(0) });
         if (window.loggedIn == "true") {
             triggerLoggedin();
         }

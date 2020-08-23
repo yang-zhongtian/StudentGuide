@@ -29,7 +29,31 @@
         height: 100%;
         width: 100%;
         background-color: lightgray;
-        /* TODO: 更换页面背景为生产背景  */
+    }
+
+    #danmu-background {
+        height: 100%;
+        width: 100%;
+        overflow: hidden;
+        list-style: none;
+        padding: 0px;
+        position: relative;
+        margin: 0px;
+    }
+
+    #danmu-background li {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        margin-top: 0px !important;
+    }
+
+    #danmu-background li img {
+        width: 100%;
+        height: 100%;
+        text-align: center;
+        line-height: 250px;
+        object-fit: cover !important;
     }
 
     .avatar {
@@ -41,7 +65,11 @@
 {% block content %}
 <div class="container-fluid page-panel">
     <div class="row" id="display-panel" style="padding: 15px 20px;">
-        <div id="danmu" class="rounded"></div>
+        <div id="danmu" class="rounded">
+            <ul id="danmu-background" class="rounded">
+
+            </ul>
+        </div>
     </div>
     <div class="row" id="send-panel">
         <div class="mx-auto">
@@ -56,7 +84,6 @@
 <div class="modal fade" id="loginModal">
     <div class="modal-dialog">
         <div class="modal-content">
-
             <div class="modal-header">
                 <h4 class="modal-title">云校登录</h4>
             </div>
@@ -95,7 +122,8 @@
                                 <div class="dropdown-menu" id="balanceServerList"></div>
                             </div>
                             &nbsp;
-                            <a href="javascript: history.go(-1)" class="btn btn-secondary" style="color: white;"><i class="fas fa-undo-alt"></i></a>
+                            <a href="javascript: history.go(-1)" class="btn btn-secondary" style="color: white;"><i
+                                    class="fas fa-undo-alt"></i></a>
                         </div>
                     </div>
                 </form>
