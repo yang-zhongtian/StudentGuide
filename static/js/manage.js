@@ -41,8 +41,7 @@ $(function () {
         })
     }
     var tagAsActive = function (nth) {
-        $("#result-container").children("tr").removeClass("table-info");
-        $("#result-container").find("tr").eq(nth).addClass("table-info");
+        $("#result-container").find("tr").eq(nth).addClass("table-info").siblings().removeClass("table-info");
     }
     var tagAsDelete = function (nth) {
         var element = $("#result-container").find("tr").eq(nth).find("td").eq(3);
