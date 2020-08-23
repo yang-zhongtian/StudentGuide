@@ -1,8 +1,11 @@
 from flask import Flask, render_template, jsonify, request, session, redirect, url_for
 from flask_pymongo import PyMongo
+from flask_limiter import Limiter
+from flask_limiter.util import get_ipaddr
 from flask_wtf import CSRFProtect
 import requests
 import re
+import functools
 import socket
 import config
 from Crypto.Cipher import AES
@@ -18,8 +21,14 @@ else:
 
 app.config.from_object(appConfig)
 
+limiter = Limiter(
+    app,
+    default_limits=[],
+    key_func=get_ipaddr,
+)
 CSRFProtect(app)
 mongo = PyMongo(app, uri=appConfig.MONGODB_URI)
+
 
 class Aes_ECB(object):
     def __init__(self, key):
@@ -77,6 +86,7 @@ def login_yunxiao(username, password, captchaCode='', captchaValue=''):
 
 
 def login_required(func):
+    @functools.wraps(func)
     def inner(*args, **kwargs):
         if not session.get("loggedin", False):
             return redirect(url_for("layout_danmu"))
@@ -84,7 +94,17 @@ def login_required(func):
     return inner
 
 
+def access_limitation(func):
+    @functools.wraps(func)
+    def inner(*args, **kwargs):
+        if appConfig.ONLY_ALLOW_DANMU:
+            return redirect(url_for("layout_danmu"))
+        return func(*args, **kwargs)
+    return inner
+
+
 def admin_required(func):
+    @functools.wraps(func)
     def inner(*args, **kwargs):
         if not session.get("admin_loggedin", False):
             return redirect(url_for("layout_danmu"))
@@ -93,6 +113,7 @@ def admin_required(func):
 
 
 def banned_checked(func):
+    @functools.wraps(func)
     def inner(*args, **kwargs):
         if mongo.db.banuser.find_one({"username": session.get("username", "")}) != None:
             return jsonify({"status": 0})
@@ -101,16 +122,19 @@ def banned_checked(func):
 
 
 @app.route("/", endpoint="layout_homeredirect")
+@access_limitation
 def layout_homeredirect():
     return redirect(url_for("layout_daka"))
 
 
 @app.route("/daka/", endpoint="layout_daka")
+@access_limitation
 def layout_daka():
     return render_template("daka.html")
 
 
 @app.route("/gallery/", endpoint="layout_gallery")
+@access_limitation
 def layout_gallery():
     return render_template("gallery.html")
 
@@ -140,8 +164,10 @@ def layout_danmu():
                            loggedin="false",
                            hide_admin="display:none;")
 
+
 @app.route("/danmu/get/", endpoint="get_danmu")
 @login_required
+@limiter.limit("30 per minute", key_func=lambda: session.get("username", ""), error_message="rate limit exceeded")
 def get_danmu():
     f = mongo.db.collection.find({
         "verified": 1
@@ -157,6 +183,7 @@ def get_danmu():
 
 @app.route("/danmu/send/", methods=["POST"], endpoint="send_danmu")
 @login_required
+@limiter.limit("25 per minute", key_func=lambda: session.get("username", ""), error_message="rate limit exceeded")
 def send_danmu():
     txt = str(request.form.get("text", ""))
     icon = str(request.form.get("icon", ""))
@@ -290,7 +317,7 @@ def operation_manage():
     accept_list = [ObjectId(x) for x in accept_id]
     delete_list = [ObjectId(x) for x in delete_id]
     mongo.db.collection.update_many({"_id": {"$in": accept_list}}, {
-                               "$set": {"verified": 1}})
+        "$set": {"verified": 1}})
     mongo.db.collection.remove({"_id": {"$in": delete_list}})
     return jsonify({"status": 1})
 
