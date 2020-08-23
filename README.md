@@ -1,5 +1,13 @@
 # 北京十一学校2020.9开学典礼在线学生手册
 寰桐阁 HCC Computer Community, Richard Yang
+## [Gitee](https://gitee.com/bjbnds/StudentGuide) [Github](https://github.com/yangzhongtian001/StudentGuide)
+![mit-licence](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)
+![python](https://img.shields.io/badge/python-%3E%3D%203.5-blue)
+![platform](https://img.shields.io/badge/platform-windows%20%7C%20macos%20%7C%20linux-blue)
+![branch](https://img.shields.io/badge/branch-master-brightgreen.svg?longCache=true)
+[![gitee](https://gitee.com/bjbnds/StudentGuide/badge/star.svg?theme=dark)](https://gitee.com/bjbnds/StudentGuide/stargazers)
+[![github](https://img.shields.io/github/stars/yangzhongtian001/StudentGuide?logo=github&color=brightgreen)](https://github.com/yangzhongtian001/StudentGuide/stargazers)
+[![github contributors](https://img.shields.io/github/contributors/yangzhongtian001/StudentGuide?logo=github)](https://github.com/yangzhongtian001/StudentGuide/stargazers)
 ## 基本架构
 Python-Flask + MongoDB(CE)
 ## 第三方依赖
