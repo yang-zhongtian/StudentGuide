@@ -1,8 +1,8 @@
 $(function () {
     var lockDown = false;
     var balanceServer = [
-        "http://mc.roselle.vip:26170/",
         "http://server3.guidelogin.hcc.io/index.php",
+        "http://mc.roselle.vip:26170/",
         "http://47.98.170.221/",
         "http://212.64.89.107/",
         "http://katyushaa.asuscomm.com:61080/"
