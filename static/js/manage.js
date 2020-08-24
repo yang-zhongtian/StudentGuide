@@ -6,10 +6,10 @@ $(function () {
     var firstPressTime = 0;
     var keyCaptureOn = true;
     toastr.options = {
-        progressBar : true,
+        progressBar: true,
         timeOut: 2000
     }
-    var loadData = function () {
+    var loadData = function (firstrun = 0) {
         $.ajax({
             type: "GET",
             url: "/danmu/super-admin/get/?verifier=" + $("#verifier-select").val(),
@@ -28,6 +28,7 @@ $(function () {
                 if (currentDataLength > 0) {
                     clearInterval(lazyLoadTimer)
                     lazyLoadTimer = undefined;
+                    if(!firstrun) $("#alert-audio").attr("src", $("#alert-audio").attr("src"));
                     $("#result-container").find("tr").eq(0).find("td").eq(0).text(">");
                     tagAsActive(0);
                 }
@@ -111,7 +112,7 @@ $(function () {
         loadData()
     })
     $(document).keydown(function (event) {
-        if(keyCaptureOn === false) return true;
+        if (keyCaptureOn === false) return true;
         switch (event.keyCode) {
             case 83: // S
                 if (currentSelected < currentDataLength - 1) {
@@ -142,7 +143,7 @@ $(function () {
                         packToServer();
                         firstPressTime = 0;
                     }
-                    else{
+                    else {
                         firstPressTime = lastTime;
                     }
                 }
@@ -185,7 +186,7 @@ $(function () {
         }
         verify.html(html_text);
     }
-    var manualSubmit = function() {
+    var manualSubmit = function () {
         swal("确认", {
             text: "是否确认提交审核数据？",
             icon: "warning",
@@ -196,12 +197,12 @@ $(function () {
             }
         });
     }
-    var dismissBanDialog = function(){ keyCaptureOn = true };
+    var dismissBanDialog = function () { keyCaptureOn = true };
     $(document).ready(function () {
         window.loadBan = loadBan;
         window.manualSubmit = manualSubmit;
         window.dismissBanDialog = dismissBanDialog;
         loadVerifier()
-        loadData()
+        loadData(1)
     })
 })

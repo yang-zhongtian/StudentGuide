@@ -59,7 +59,13 @@
     <div class="row mx-auto">
         <div class="alert alert-info alert-dismissible text-center" style="width: 100%;">
             <button type="button" class="close" data-dismiss="alert">&times;</button>
-            <strong>操作提示</strong>&nbsp;&nbsp;键盘 <span class="badge badge-info">S</span>下一条&nbsp;&nbsp;<span class="badge badge-info">W</span>上一条&nbsp;&nbsp;<span class="badge badge-info">A</span>标记为删除或取消标记&nbsp;&nbsp;<span class="badge badge-info">双击D</span>提交当前页审核数据&nbsp;&nbsp;&nbsp;&nbsp;鼠标 <span class="badge badge-info">点击一行</span>选中数据&nbsp;&nbsp;<span class="badge badge-info">点击已选中行数据</span>切换该数据是否删除&nbsp;&nbsp;<a href="javascript:void(0)" onclick="javascript:manualSubmit()" class="badge badge-danger text-white">点此</a>提交数据
+            <strong>操作提示</strong>&nbsp;&nbsp;键盘 <span class="badge badge-info">S</span>下一条&nbsp;&nbsp;<span
+                class="badge badge-info">W</span>上一条&nbsp;&nbsp;<span
+                class="badge badge-info">A</span>标记为删除或取消标记&nbsp;&nbsp;<span
+                class="badge badge-info">双击D</span>提交当前页审核数据&nbsp;&nbsp;&nbsp;&nbsp;鼠标 <span
+                class="badge badge-info">点击一行</span>选中数据&nbsp;&nbsp;<span
+                class="badge badge-info">点击已选中行数据</span>切换该数据是否删除&nbsp;&nbsp;<a href="javascript:void(0)"
+                onclick="javascript:manualSubmit()" class="badge badge-danger text-white">点此</a>提交数据
         </div>
     </div>
     <div class="row mx-auto">
@@ -87,7 +93,8 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title">用户封禁</h4>
-                <button type="button" class="close" data-dismiss="modal" onclick="javascript:dismissBanDialog()">&times;</button>
+                <button type="button" class="close" data-dismiss="modal"
+                    onclick="javascript:dismissBanDialog()">&times;</button>
             </div>
             <div class="modal-body">
                 <table class="table table-hover">
@@ -105,11 +112,13 @@
             <div class="modal-footer">
                 <button id="banuser-ban-btn" type="button" class="btn btn-danger">封禁用户</button>
                 <button id="banuser-rec-btn" type="button" class="btn btn-warning">解封用户</button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="javascript:dismissBanDialog()">关闭</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                    onclick="javascript:dismissBanDialog()">关闭</button>
             </div>
         </div>
     </div>
 </div>
+<iframe id="alert-audio" src="https://cdn.jsdelivr.net/gh/yangzhongtian001/jsdelivrcdn@master/stuguidecdn/audio/new_message_alert.mp3" allow="autoplay" style="display: none"></iframe>
 {% endblock %}
 
 {% block script %}
