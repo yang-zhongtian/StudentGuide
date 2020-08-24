@@ -29,6 +29,7 @@
         height: 100%;
         width: 100%;
         background-color: lightgray;
+        position: relative;
     }
 
     #danmu-background {
@@ -58,6 +59,15 @@
 
     .avatar {
         width: 45px;
+    }
+
+    @keyframes muiscIconRotate {
+        from {
+            transform: rotate(0deg);
+        }
+        to {
+            transform: rotate(360deg);
+        }
     }
 </style>
 {% endblock %}
@@ -174,6 +184,8 @@
     src="https://cdn.staticfile.org/bootstrap-select/1.13.18/js/i18n/defaults-zh_CN.min.js"></script>
 <script type="text/javascript"
     src="https://cdn.jsdelivr.net/gh/yangzhongtian001/jsdelivrcdn@master/stuguidecdn/static/js/jquery.barrager.min.js"></script>
+<script type="text/javascript"
+    src="https://cdn.jsdelivr.net/gh/yangzhongtian001/jsdelivrcdn@master/stuguidecdn/static/js/muisc_play.min.js"></script>
 <script>
     var loggedIn = "{{ loggedin }}";
 </script>

@@ -231,6 +231,12 @@ $(function () {
         $(window).resize(function () { fitScreen(0) });
         if (window.loggedIn == "true") {
             triggerLoggedin();
+            SMmuiscPlay({
+                el: "danmu",
+                audioUrl: "https://cn-south-17-aplayer-46154810.oss.dogecdn.com/yourname.mp3",
+                position: "top:10px;right:10px",
+                animaClass: "muiscIconRotate"
+            });
         }
         else {
             $("#loginModal").modal({
