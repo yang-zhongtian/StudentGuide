@@ -28,6 +28,8 @@ Python-Flask + MongoDB(CE)
     |-main.py 网站主程序
     |-config.py 网站配置文件
     |-unicorn.py gunicorn配置文件
+## 已知BUG
+* [ ] Chrome浏览器禁止弹幕页音乐自动播放，目前没有解决方法。
 ## 注意事项
 * 大部分静态文件均已托管至Github，使用jsdelivr加载
 * 当前版本未使用Flask-Cache，请在nginx处设置静态缓存
