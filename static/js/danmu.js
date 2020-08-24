@@ -9,27 +9,27 @@ $(function () {
     ];
     var backgroundImage = {
         "large": [
-            "https://cdn.jsdelivr.net/gh/yangzhongtian001/imglib@master/large-min-new/background-large-1.jpg",
-            "https://cdn.jsdelivr.net/gh/yangzhongtian001/imglib@master/large-min-new/background-large-2.jpg",
-            "https://cdn.jsdelivr.net/gh/yangzhongtian001/imglib@master/large-min-new/background-large-3.jpg",
-            "https://cdn.jsdelivr.net/gh/yangzhongtian001/imglib@master/large-min-new/background-large-4.jpg",
-            "https://cdn.jsdelivr.net/gh/yangzhongtian001/imglib@master/large-min-new/background-large-5.jpg",
-            "https://cdn.jsdelivr.net/gh/yangzhongtian001/imglib@master/large-min-new/background-large-6.jpg"
+            "https://cdn.jsdelivr.net/gh/yangzhongtian001/jsdelivrcdn@master/stuguidecdn/background/large-min/background-large-1.jpg",
+            "https://cdn.jsdelivr.net/gh/yangzhongtian001/jsdelivrcdn@master/stuguidecdn/background/large-min/background-large-2.jpg",
+            "https://cdn.jsdelivr.net/gh/yangzhongtian001/jsdelivrcdn@master/stuguidecdn/background/large-min/background-large-3.jpg",
+            "https://cdn.jsdelivr.net/gh/yangzhongtian001/jsdelivrcdn@master/stuguidecdn/background/large-min/background-large-4.jpg",
+            "https://cdn.jsdelivr.net/gh/yangzhongtian001/jsdelivrcdn@master/stuguidecdn/background/large-min/background-large-5.jpg",
+            "https://cdn.jsdelivr.net/gh/yangzhongtian001/jsdelivrcdn@master/stuguidecdn/background/large-min/background-large-6.jpg"
         ],
         "small": [
-            "https://cdn.jsdelivr.net/gh/yangzhongtian001/imglib@master/small-min/background-small-1.jpg",
-            "https://cdn.jsdelivr.net/gh/yangzhongtian001/imglib@master/small-min/background-small-2.jpg",
-            "https://cdn.jsdelivr.net/gh/yangzhongtian001/imglib@master/small-min/background-small-3.jpg",
-            "https://cdn.jsdelivr.net/gh/yangzhongtian001/imglib@master/small-min/background-small-4.jpg",
-            "https://cdn.jsdelivr.net/gh/yangzhongtian001/imglib@master/small-min/background-small-5.jpg",
-            "https://cdn.jsdelivr.net/gh/yangzhongtian001/imglib@master/small-min/background-small-6.jpg",
-            "https://cdn.jsdelivr.net/gh/yangzhongtian001/imglib@master/small-min/background-small-7.jpg",
-            "https://cdn.jsdelivr.net/gh/yangzhongtian001/imglib@master/small-min/background-small-8.jpg"
+            "https://cdn.jsdelivr.net/gh/yangzhongtian001/jsdelivrcdn@master/stuguidecdn/background/small-min/background-small-1.jpg",
+            "https://cdn.jsdelivr.net/gh/yangzhongtian001/jsdelivrcdn@master/stuguidecdn/background/small-min/background-small-2.jpg",
+            "https://cdn.jsdelivr.net/gh/yangzhongtian001/jsdelivrcdn@master/stuguidecdn/background/small-min/background-small-3.jpg",
+            "https://cdn.jsdelivr.net/gh/yangzhongtian001/jsdelivrcdn@master/stuguidecdn/background/small-min/background-small-4.jpg",
+            "https://cdn.jsdelivr.net/gh/yangzhongtian001/jsdelivrcdn@master/stuguidecdn/background/small-min/background-small-5.jpg",
+            "https://cdn.jsdelivr.net/gh/yangzhongtian001/jsdelivrcdn@master/stuguidecdn/background/small-min/background-small-6.jpg",
+            "https://cdn.jsdelivr.net/gh/yangzhongtian001/jsdelivrcdn@master/stuguidecdn/background/small-min/background-small-7.jpg",
+            "https://cdn.jsdelivr.net/gh/yangzhongtian001/jsdelivrcdn@master/stuguidecdn/background/small-min/background-small-8.jpg"
         ]
     }
     var backgroundInterval;
     var submitButton = $("#send-danmu-form").children("button[type='submit']");
-    var iconTranslate = ["https://cdn.jsdelivr.net/gh/yangzhongtian001/imglib@master/boy.png", "https://cdn.jsdelivr.net/gh/yangzhongtian001/imglib@master/girl.png"];
+    var iconTranslate = ["https://cdn.jsdelivr.net/gh/yangzhongtian001/jsdelivrcdn@master/stuguidecdn/icons/boy.png", "https://cdn.jsdelivr.net/gh/yangzhongtian001/jsdelivrcdn@master/stuguidecdn/icons/girl.png"];
     var fitScreen = function (stagemode = 0) {
         if (stagemode) {
             var send_panel_height = 0;
