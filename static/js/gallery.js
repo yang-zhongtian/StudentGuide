@@ -11,7 +11,7 @@ $(function () {
         "高三": "",
         "国际部高一": "",
         "国际部高二": "",
-        "国际部高三": ""
+        "国际部高三": "https://v.qq.com/txp/iframe/player.html?vid=m3141zuty0z"
     }
     var loadData = function () {
         $(".v-bind").each(function () {
