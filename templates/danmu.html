@@ -4,8 +4,7 @@
 <link rel="stylesheet" href="https://cdn.staticfile.org/bootstrap-colorpicker/3.2.0/css/bootstrap-colorpicker.min.css">
 <link rel="stylesheet" href="https://cdn.staticfile.org/bootstrap-select/1.13.18/css/bootstrap-select.min.css">
 <link rel="stylesheet" href="https://cdn.staticfile.org/bootstrap-select/1.13.18/css/bootstrap-select.min.css">
-<link rel="stylesheet"
-    href="https://cdn.jsdelivr.net/gh/yangzhongtian001/jsdelivrcdn@master/stuguidecdn/static/css/barrager.css">
+<link rel="stylesheet" href="/static/css/barrager.min.css">
 <style>
     html,
     body {
@@ -65,6 +64,7 @@
         from {
             transform: rotate(0deg);
         }
+
         to {
             transform: rotate(360deg);
         }
@@ -158,12 +158,10 @@
                 <div class="form-group">
                     <label for="icon-celection">弹幕图标</label>
                     <select class="form-control selectpicker" id="icon-celection" data-style="btn-primary">
-                        <option
-                            data-content='<img src="https://cdn.jsdelivr.net/gh/yangzhongtian001/jsdelivrcdn@master/stuguidecdn/icons/boy.png" class="avatar"/> 绅士'
-                            value="0">绅士</option>
-                        <option
-                            data-content='<img src="https://cdn.jsdelivr.net/gh/yangzhongtian001/jsdelivrcdn@master/stuguidecdn/icons/girl.png" class="avatar"/> 淑女'
-                            value="1">淑女</option>
+                        <option data-content='<img src="/static/img/icons/boy.png" class="avatar"/> 绅士' value="0">绅士
+                        </option>
+                        <option data-content='<img src="/static/img/icons/girl.png" class="avatar"/> 淑女' value="1">淑女
+                        </option>
                     </select>
                 </div>
             </div>
@@ -182,10 +180,8 @@
     src="https://cdn.staticfile.org/bootstrap-select/1.13.18/js/bootstrap-select.min.js"></script>
 <script type="text/javascript"
     src="https://cdn.staticfile.org/bootstrap-select/1.13.18/js/i18n/defaults-zh_CN.min.js"></script>
-<script type="text/javascript"
-    src="https://cdn.jsdelivr.net/gh/yangzhongtian001/jsdelivrcdn@master/stuguidecdn/static/js/jquery.barrager.min.js"></script>
-<script type="text/javascript"
-    src="https://cdn.jsdelivr.net/gh/yangzhongtian001/jsdelivrcdn@master/stuguidecdn/static/js/muisc_play.min.js"></script>
+<script type="text/javascript" src="/static/js/jquery.barrager.min.js"></script>
+<script type="text/javascript" src="/static/js/muisc_play.min.js"></script>
 <script>
     var loggedIn = "{{ loggedin }}";
 </script>
