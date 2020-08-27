@@ -47,7 +47,7 @@ $(function () {
     var tagAsDelete = function (nth) {
         var element = $("#result-container").find("tr").eq(nth).find("td").eq(3);
         if (element.html() == "") {
-            element.html('<i class="fa fa-check"></i>')
+            element.html('<i class="fas fa-check"></i>')
         }
         else {
             element.html('')
