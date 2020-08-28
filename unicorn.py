@@ -3,7 +3,7 @@ import gevent.monkey
 gevent.monkey.patch_all()
 import multiprocessing
 
-bind = "unix:/var/run/studentguide.sock"
+bind = "127.0.0.1:5500"#"unix:/var/run/studentguide.sock"
 workers = multiprocessing.cpu_count() * 2 +1
 max_requests = 10000
 worker_connections = 10000
