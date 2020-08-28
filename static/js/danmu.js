@@ -233,7 +233,7 @@ $(function () {
             triggerLoggedin();
             SMmuiscPlay({
                 el: "danmu",
-                audioUrl: "https://cn-south-17-aplayer-46154810.oss.dogecdn.com/yourname.mp3",
+                audioUrl: "/static/audio/background.mp3",
                 position: "top:10px;right:10px",
                 animaClass: "muiscIconRotate"
             });
