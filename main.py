@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from flask import Flask, render_template, jsonify, request, session, redirect, url_for
 from flask_pymongo import PyMongo
 from flask_limiter import Limiter
