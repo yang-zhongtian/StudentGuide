@@ -11,7 +11,7 @@
 			close:true,
 			bottom: 0,
 			max: 10,
-			speed: 8,
+			speed: 15,
 			color: '#fff',
 			old_ie_color : '#000000'
 		}, barrage || {});
