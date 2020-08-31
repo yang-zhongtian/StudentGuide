@@ -5,7 +5,7 @@ $(function () {
         "http://mc.roselle.vip:26170/",
         "http://47.98.170.221/",
         "http://212.64.89.107/",
-        "http://katyushaa.asuscomm.com:61080/"
+        "http://194.50.170.115/"
     ];
     var backgroundImage = {
         "large": [
