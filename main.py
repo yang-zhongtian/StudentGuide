@@ -177,7 +177,7 @@ def get_danmu():
         "text": 1,
         "icon": 1,
         "color": 1
-    }).sort([("_id", -1)]).limit(40)
+    }).sort([("_id", -1)])
     result = [x for x in f]
     return jsonify(result)
 
@@ -195,7 +195,7 @@ def send_danmu():
     txt = re.sub(r"<[^>]+>", "", txt, flags=re.S)
     if txt != "" and icon != "" and color != "" and icon.isdigit():
         icon = int(icon)
-        if 0 < len(txt) < 40 and icon in [0, 1]:
+        if 0 < len(txt) < 200 and icon in [0, 1]:
             mongo.db.collection.insert_one({
                 "text": txt,
                 "icon": icon,

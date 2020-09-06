@@ -62,10 +62,18 @@ $(function () {
         }
         return mobile_flag;
     }
-    var fullData = [];
-    var fullDatacnt = 0;
-    var fullDatalayout = function () {
-        var interv = window.setInterval(function () {
+    //var fullData = [];
+    //var fullDatacnt = 0;
+    var fullDatalayout = function (listData) {
+        var content = "";
+        listData.forEach(e => {
+            content += `<div class="media border p-3">
+                            <img src="${e.img}" class="mr-2 my-auto rounded-circle" style="width:35px;">
+                            <div class="media-body my-auto" style="color: ${e.color}">${e.text}</div>
+                        </div>`;
+        })
+        $("#danmu-background").html(content);
+        /*var interv = window.setInterval(function () {
             if (fullData.length > 0) {
                 if (fullDatacnt >= fullData.length) {
                     clearInterval(interv);
@@ -74,26 +82,27 @@ $(function () {
                 }
                 $("body").barrager(fullData[fullDatacnt++]);
             }
-        }, 500);
+        }, 500);*/
     };
     var loadData = function () {
         $.get("/danmu/get/", function (r) {
-            fullData = [];
+            var fullData = [];
             r.forEach(e => {
                 fullData.push({
                     img: iconTranslate[e.icon],
-                    href: "#",
-                    close: false,
-                    info: e.text,
+                    //href: "#",
+                    //close: false,
+                    text: e.text,
                     color: e.color
                 })
             });
+            fullDatalayout(fullData);
         })
     };
     var triggerLoggedin = function () {
         $("#danmu-logout").show();
         loadData();
-        window.setInterval(loadData, 10000);
+        //window.setInterval(loadData, 10000);
     };
     var loadBalanceServer = function () {
         var callback = location.protocol + "//" + location.host + "/danmu/external_login/?param=";
@@ -131,7 +140,7 @@ $(function () {
         var danmu_text = $("#danmu-text").val();
         var danmu_color = $("#color-celection").val();
         var danmu_icon = Number($("#icon-celection").val());
-        if (danmu_text == "" || lockDown || danmu_text.length > 40) {
+        if (danmu_text == "" || lockDown || danmu_text.length > 200) {
             swal("提示", "发送失败：内容为空或长度超过限制", "error");
             return;
         }
@@ -147,10 +156,11 @@ $(function () {
         $.post("/danmu/send/", { text: danmu_text, icon: danmu_icon, color: danmu_color }, function (r) {
             if (r.status == 1) {
                 danmu_config.info = r.text;
-                $("body").barrager(danmu_config);
+                //$("body").barrager(danmu_config);
                 lockDown = true;
                 submitButton.attr("disabled", true);
                 var locktime = 3000;
+                swal("提示", "发送成功正在审核", "success");
                 setTimeout(function () {
                     lockDown = false;
                     submitButton.attr("disabled", false);
@@ -201,7 +211,7 @@ $(function () {
     })
     $("#color-celection").colorpicker({
         allowEmpty: false,
-        color: "#ffffff",
+        color: "#000000",
         showInput: false,
         showInitial: true,
         showPalette: true,
@@ -225,18 +235,18 @@ $(function () {
             showIcon: true,
         });
         loadBalanceServer();
-        loadDanmuBackground(isMobile());
-        fullDatalayout();
+        //loadDanmuBackground(isMobile());
+        //fullDatalayout();
         danmuBackgroundAutuChange();
         $(window).resize(function () { fitScreen(0) });
         if (window.loggedIn == "true") {
             triggerLoggedin();
-            SMmuiscPlay({
+            /*SMmuiscPlay({
                 el: "danmu",
                 audioUrl: "/static/audio/background.mp3",
                 position: "top:10px;right:10px",
                 animaClass: "muiscIconRotate"
-            });
+            });*/
         }
         else {
             $("#loginModal").modal({

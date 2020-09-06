@@ -27,7 +27,7 @@
     #danmu {
         height: 100%;
         width: 100%;
-        background-color: lightgray;
+        /*background-color: lightgray;*/
         position: relative;
     }
 
@@ -76,9 +76,7 @@
 <div class="container-fluid page-panel">
     <div class="row" id="display-panel" style="padding: 15px 20px;">
         <div id="danmu" class="rounded">
-            <ul id="danmu-background" class="rounded">
-
-            </ul>
+            <ul id="danmu-background" class="rounded" style="overflow-y: auto;"> </ul>
         </div>
     </div>
     <div class="row" id="send-panel">
@@ -180,7 +178,7 @@
     src="https://cdn.staticfile.org/bootstrap-select/1.13.18/js/bootstrap-select.min.js"></script>
 <script type="text/javascript"
     src="https://cdn.staticfile.org/bootstrap-select/1.13.18/js/i18n/defaults-zh_CN.min.js"></script>
-<script type="text/javascript" src="/static/js/jquery.barrager.min.js"></script>
+<!--<script type="text/javascript" src="/static/js/jquery.barrager.min.js"></script>-->
 <script type="text/javascript" src="/static/js/muisc_play.min.js"></script>
 <script>
     var loggedIn = "{{ loggedin }}";

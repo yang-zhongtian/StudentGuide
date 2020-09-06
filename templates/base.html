@@ -31,27 +31,27 @@
 <body>
     <div id="navbar-container">
         <nav class="navbar navbar-expand-md {% block navbar_style %}bg-primary{% endblock %} navbar-dark">
-            <a class="navbar-brand">{% block brand %}<i class="fas fa-passport"></i>&nbsp;在线开学手册{% endblock %}</a>
-            <span class="navbar-text ml-auto d-sm-block d-md-none">戳此开始→</span>
+            <a class="navbar-brand">{% block brand %}<i class="fas fa-passport"></i>&nbsp;在线感恩日活动{% endblock %}</a>
+            <!--<span class="navbar-text ml-auto d-sm-block d-md-none">戳此开始→</span>-->
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="collapsibleNavbar">
                 <ul class="navbar-nav mr-auto">
-                    <li class="nav-item">
+                    <li class="nav-item" style="display: none;">
                         <a class="nav-link" href="/daka/"><i class="fas fa-map-marked-alt"></i>打卡</a>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item" style="display: none;">
                         <a class="nav-link" href="/gallery/"><i class="fas fa-images"></i>祝福</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/danmu/"><i class="fas fa-comments"></i>弹幕</a>
+                        <a class="nav-link" href="/danmu/"><i class="fas fa-comments"></i>留言</a>
                     </li>
                     {% block admin_options %}
                     <li id="danmu-admin" class="nav-item" style="{{ hide_admin }}">
                         <a class="nav-link" href="/danmu/super-admin/"><i class="fas fa-tools"></i>管理员入口</a>
                     </li>
-                    <li id="danmu-stagemode" class="nav-item" style="{{ hide_admin }}">
+                    <li id="danmu-stagemode" class="nav-item" style="display: none;">
                         <a id="enter-stagemode" class="nav-link" href="javascript: void(0)"><i
                                 class="fas fa-expand-arrows-alt"></i>进入舞台模式</a>
                     </li>
