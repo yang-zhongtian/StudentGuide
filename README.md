@@ -28,12 +28,16 @@ Python-Flask + MongoDB(CE)
     |-main.py 网站主程序
     |-config.py 网站配置文件
     |-unicorn.py gunicorn配置文件
+## 版本迭代
+* v1 纯前端半成品，已托管至Gitee Pages
+* v2 完整版，为2020.9 开学典礼提供服务
+* v3 精简修改版（当前版本），只保留弹幕功能，修改显示方案为列表，为2020.9.10感恩日提供留言服务 
 ## 已知BUG
 * [ ] Chrome浏览器禁止弹幕页音乐自动播放，目前没有解决方法。
 ## 注意事项
-* ~~大部分静态文件均已托管至Github，使用jsdelivr加载~~
+* ~~大部分静态文件均已托管至Github，使用jsdelivr加载~~static目录服务器nginx处理
 * 当前版本未使用Flask-Cache，请在nginx处设置静态缓存
-* 未防高并发请在nginx处限流
+* ~~未防高并发请在nginx处限流~~已限制请求量
 * 解释权归北京十一学校寰桐阁技术联盟HCC网络技术社所有
 * 本项目使用MIT开源协议
 
